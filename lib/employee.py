@@ -1,7 +1,6 @@
 # lib/employee.py
 from __init__ import CURSOR, CONN
 from department import Department
-# import review
 
 class Employee:
 
@@ -186,21 +185,16 @@ class Employee:
         row = CURSOR.execute(sql, (name,)).fetchone()
         return cls.instance_from_db(row) if row else None
 
-    # def reviews(self):
-    #     """Return list of reviews associated with current employee"""
-    #     import review 
-    #     reviews = review.Review.find_by_id(self.id)
-    #     return reviews if reviews is not None else []
     def reviews(self):
-        """Return a list of Review instances for the current Employee instance."""
+        """Return list of reviews associated with current employee"""
+        from review import Review
         sql = """
-            SELECT *
-            FROM reviews
+            SELECT * FROM reviews
             WHERE employee_id = ?
         """
-        import review 
-        rows = CURSOR.execute(sql, (self.id,)).fetchall()
-        return [review.Review.instance_from_db(row) for row in rows]
+        CURSOR.execute(sql, (self.id,),)
 
-
-
+        rows = CURSOR.fetchall()
+        return [
+            Review.instance_from_db(row) for row in rows
+        ]
